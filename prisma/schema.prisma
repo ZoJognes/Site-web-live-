@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  name          String
+  passwordHash  String
+  role          String       // "STUDENT", "INSTRUCTOR", "ADMIN"
+  enrollments   Enrollment[]
+  sessions      Session[]    @relation("InstructorSessions")
+  certificates  Certificate[]
+  payments      Payment[]
+}
+
+model Course {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  instructorId String
+  enrollments Enrollment[]
+  certificates Certificate[]
+}
+
+model Session {
+  id           String      @id @default(uuid())
+  title        String
+  scheduledAt  DateTime
+  duration     Int
+  instructorId String
+  instructor   User        @relation("InstructorSessions", fields: [instructorId], references: [id])
+  recordings   Recording[]
+}
+
+model Recording {
+  id            String   @id @default(uuid())
+  sessionId     String
+  session       Session  @relation(fields: [sessionId], references: [id])
+  url           String
+  createdAt     DateTime @default(now())
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  progress  Float    @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Certificate {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  issuedAt  DateTime @default(now())
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Float
+  status    String   // "PENDING", "COMPLETED", "FAILED"
+  createdAt DateTime @default(now())
+}

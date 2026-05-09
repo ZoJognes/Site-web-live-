@@ -1,0 +1,12 @@
+{
+  "name": "EliteFormation Platform",
+  "description": "Plateforme souveraine de formation (LMS+Visioconférence) optimisée pour le contexte mobile-first en Afrique francophone.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "lms",
+    "videoconference"
+  ]
+}
